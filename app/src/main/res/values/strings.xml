@@ -1,0 +1,4 @@
+<resources>
+    <string name="app_name">TSpark</string>
+    <string name="calcBtn">Calculate Time</string>
+</resources>
