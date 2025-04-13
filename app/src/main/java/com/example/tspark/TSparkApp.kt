@@ -1,6 +1,11 @@
 package com.example.tspark
 
 import androidx.annotation.StringRes
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.slideInHorizontally
+import androidx.compose.animation.slideOutHorizontally
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
@@ -31,6 +36,7 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.example.tspark.ui.ChargeCalculatorScreen
 import com.example.tspark.ui.SettingsScreen
+
 
 enum class AppScreen(@StringRes val title: Int) {
     Start(title = R.string.app_name),
@@ -63,7 +69,12 @@ fun TSparkAppBar(
             }
         },
         actions = {
-            IconButton(onClick = { navController.navigate(AppScreen.Settings.name) }) {
+            IconButton(onClick = {
+                if (currentScreen != AppScreen.Settings) {
+                    navController.navigate(AppScreen.Settings.name)
+                }
+
+            }) {
                 Icon(
                     imageVector = Icons.Filled.Settings,
                     contentDescription = "Settings"
@@ -108,7 +119,32 @@ fun TSparkApp(
                 .verticalScroll(rememberScrollState())
                 .padding(innerPadding)
         ) {
-            composable(route = AppScreen.Start.name) {
+            composable(
+                route = AppScreen.Start.name,
+                enterTransition = {
+                    slideInHorizontally(
+                        initialOffsetX = { fullWidth -> fullWidth },
+                        animationSpec = tween(durationMillis = 300)
+                    ) + fadeIn(animationSpec = tween(durationMillis = 300))
+                },
+                exitTransition = {
+                    slideOutHorizontally(
+                        targetOffsetX = { fullWidth -> -fullWidth },
+                        animationSpec = tween(durationMillis = 300)
+                    ) + fadeOut(animationSpec = tween(durationMillis = 300))
+                },
+                popEnterTransition = {
+                    slideInHorizontally(
+                        initialOffsetX = { fullWidth -> -fullWidth },
+                        animationSpec = tween(durationMillis = 300)
+                    ) + fadeIn(animationSpec = tween(durationMillis = 300))
+                },
+                popExitTransition = {
+                    slideOutHorizontally(
+                        targetOffsetX = { fullWidth -> fullWidth },
+                        animationSpec = tween(durationMillis = 300)
+                    ) + fadeOut(animationSpec = tween(durationMillis = 300))
+                }) {
                 ChargeCalculatorScreen(
                     modifier = Modifier
                         .fillMaxSize()
@@ -117,7 +153,21 @@ fun TSparkApp(
                 )
             }
 
-            composable(route = AppScreen.Settings.name) {
+            composable(
+                route = AppScreen.Settings.name,
+                enterTransition = {
+                    slideInHorizontally(
+                        initialOffsetX = { fullWidth -> fullWidth },
+                        animationSpec = tween(durationMillis = 300)
+                    ) + fadeIn(animationSpec = tween(durationMillis = 300))
+                },
+                exitTransition = {
+                    slideOutHorizontally(
+                        targetOffsetX = { fullWidth -> fullWidth },
+                        animationSpec = tween(durationMillis = 300)
+                    ) + fadeOut(animationSpec = tween(durationMillis = 300))
+                },
+            ) {
                 SettingsScreen(
                     modifier = Modifier
                         .fillMaxSize()
