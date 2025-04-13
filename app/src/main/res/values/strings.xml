@@ -1,4 +1,6 @@
 <resources>
     <string name="app_name">TSpark</string>
     <string name="calcBtn">Calculate Time</string>
+    <string name="settings">Settings</string>
+    <string name="back_button">Back</string>
 </resources>
