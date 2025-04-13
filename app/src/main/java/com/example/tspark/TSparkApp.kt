@@ -42,7 +42,6 @@ enum class AppScreen(@StringRes val title: Int) {
 fun TSparkAppBar(
     currentScreen: AppScreen,
     canNavigateBack: Boolean,
-    navigateUp: () -> Unit,
     navController: NavHostController,
     modifier: Modifier = Modifier
 ) {
@@ -55,7 +54,7 @@ fun TSparkAppBar(
         modifier = modifier,
         navigationIcon = {
             if (canNavigateBack) {
-                IconButton(onClick = navigateUp) {
+                IconButton(onClick = { navController.navigateUp() }) {
                     Icon(
                         imageVector = Icons.AutoMirrored.Filled.ArrowBack,
                         contentDescription = stringResource(R.string.back_button)
@@ -90,7 +89,6 @@ fun TSparkApp(
             TSparkAppBar(
                 currentScreen = currentScreen,
                 canNavigateBack = navController.previousBackStackEntry != null,
-                navigateUp = { navController.navigateUp() },
                 navController
             )
         },
