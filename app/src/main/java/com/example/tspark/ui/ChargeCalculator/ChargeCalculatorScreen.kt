@@ -1,5 +1,6 @@
-package com.example.tspark.ui
+package com.example.tspark.ui.ChargeCalculator
 
+import android.annotation.SuppressLint
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -11,8 +12,8 @@ import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableDoubleStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -23,55 +24,18 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.tspark.R
-import kotlin.time.Duration.Companion.hours
 
 
+@SuppressLint("DefaultLocale")
 @Composable
-fun ChargeCalculatorScreen(modifier: Modifier) {
+fun ChargeCalculatorScreen(viewModel: ChargeCalculatorViewModel = viewModel(), modifier: Modifier) {
     val keyboardController = LocalSoftwareKeyboardController.current
-    var currentSOC by remember { mutableStateOf("0") }
-    var amps by remember { mutableStateOf("8") }
-    var power by remember { mutableDoubleStateOf(0.0) }
-    var targetSOC by remember { mutableStateOf("80") }
-    var remainingHours by remember { mutableStateOf(0L) }
-    var remainingMinutes by remember { mutableStateOf(0L) }
-    var voltage by remember { mutableStateOf("200") } // default to 200 as usually we charge 1.6 kWh
-    // Tesla LFP battery usable capacity  57.5 kWh
-    val batteryCapacity = 57.5
-
-    var kWhNeeded by remember { mutableStateOf("0") }
-
-    //battery degradation
-    var currentMaxRange by remember { mutableStateOf("266") } //mi
-    fun calculateBatteryDegradation(): Double {
-        val initialRange = 272.0 //mi
-
-        return (initialRange - currentMaxRange.toInt()) / initialRange
-    }
-
-    //    Power (kW) = Voltage (V) x Amps (A) / 1000
-    //    230V x 8A = 1840 Watts
-    //    1840 Watts / 1000 = 1.84 kW
-    //    1.84 kW x 1 hour = 1.84 kWh
-    fun handleCalculateTime() {
-        val effectiveCapacity = batteryCapacity - batteryCapacity * calculateBatteryDegradation()
-        power = voltage.toDouble() * amps.toInt() / 1000 // kWh
-        val energyNeeded =
-            (targetSOC.toInt() - currentSOC.toInt()) / 100.0 * effectiveCapacity // kWh
-        kWhNeeded = energyNeeded.toString()
-        val timeHours = energyNeeded / power
-        val duration = timeHours.hours
-        remainingHours = duration.inWholeHours
-        remainingMinutes = (duration - remainingHours.hours).inWholeMinutes
-
-        keyboardController?.hide()
-    }
+    val uiState by viewModel.uiState.collectAsState()
+    var showOptionalFields by remember { mutableStateOf(false) }
 
     //todo add also cost to the result
-    // make cost and voltage optional params to show field by toggle otherwise use the default
-
-    var showOptionalFields by remember { mutableStateOf(false) }
 
     Column(modifier = modifier, horizontalAlignment = Alignment.CenterHorizontally) {
         Row(
@@ -94,18 +58,17 @@ fun ChargeCalculatorScreen(modifier: Modifier) {
         }
 
         if (showOptionalFields) {
-
             TextField(
-                value = currentMaxRange,
-                onValueChange = { currentMaxRange = it },
+                value = uiState.currentMaxRange,
+                onValueChange = { viewModel.setCurrentMaxRange(it) },
                 label = { Text("Current Max Range at 100%") },
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number)
             )
 
             TextField(
-                value = voltage,
+                value = uiState.voltage,
                 onValueChange = {
-                    voltage = it
+                    viewModel.setVoltage(it)
                 },
                 label = { Text("Volt") },
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number)
@@ -113,12 +76,11 @@ fun ChargeCalculatorScreen(modifier: Modifier) {
 
         }
 
-
         TextField(
-            value = currentSOC,
+            value = uiState.currentSOC,
             onValueChange = { input ->
                 if (input.all { it.isDigit() }) {
-                    currentSOC = input
+                    viewModel.setCurrentSOC(input)
                 }
             },
             label = { Text("Enter current battery %") },
@@ -127,40 +89,42 @@ fun ChargeCalculatorScreen(modifier: Modifier) {
         )
 
         TextField(
-            value = amps,
+            value = uiState.amps,
             onValueChange = {
-                amps = it
+                viewModel.setAmp(it)
             },
             label = { Text("Amps") },
             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number)
         )
 
-
         TextField(
-            value = targetSOC,
+            value = uiState.targetSOC,
             onValueChange = {
-                targetSOC = it
+                viewModel.setTargetSoc(it)
             },
             label = { Text("Target SOC %") },
             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number)
         )
 
-        Button(onClick = { handleCalculateTime() }) {
+        Button(onClick = {
+            viewModel.handleCalculateTime()
+            keyboardController?.hide()
+        }) {
             Text(stringResource(R.string.calcBtn))
         }
 
-        if (power != 0.0) {
+        if (uiState.power != 0.0) {
             Text(
                 "Battery degradation: ${
                     String.format(
                         "%.2f",
-                        calculateBatteryDegradation() * 100
+                        viewModel.calculateBatteryDegradation() * 100
                     )
                 }%"
             )
-            Text("kW needed:  ${String.format("%.2f", kWhNeeded.toDouble())}")
-            Text("Time remain: $remainingHours h $remainingMinutes m")
-            Text("On $power kWh")
+            Text("kW needed:  ${String.format("%.2f", uiState.kWhNeeded.toDouble())}")
+            Text("Time remain: ${uiState.remainingHours} h ${uiState.remainingMinutes} m")
+            Text("On ${uiState.power} kWh")
         }
     }
 
