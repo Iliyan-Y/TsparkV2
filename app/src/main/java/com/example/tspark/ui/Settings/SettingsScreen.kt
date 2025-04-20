@@ -1,4 +1,4 @@
-package com.example.tspark.ui
+package com.example.tspark.ui.Settings
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.material3.Text
