@@ -26,11 +26,15 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.tspark.R
+import com.example.tspark.ui.AppViewModelProvider
 
 
 @SuppressLint("DefaultLocale")
 @Composable
-fun ChargeCalculatorScreen(viewModel: ChargeCalculatorViewModel = viewModel(), modifier: Modifier) {
+fun ChargeCalculatorScreen(
+    viewModel: ChargeCalculatorViewModel = viewModel(factory = AppViewModelProvider.Factory),
+    modifier: Modifier
+) {
     val keyboardController = LocalSoftwareKeyboardController.current
     val uiState by viewModel.uiState.collectAsState()
     var showOptionalFields by remember { mutableStateOf(false) }
