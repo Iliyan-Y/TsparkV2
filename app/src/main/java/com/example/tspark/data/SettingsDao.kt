@@ -16,7 +16,7 @@ interface SettingsDao {
     suspend fun update(item: Settings)
 
     @Query("SELECT * from settings ORDER BY id DESC LIMIT 1")
-    fun getSettings(): Flow<Settings>
+    fun getSettings(): Flow<Settings?>
 
 //    @Delete
 //    suspend fun delete(item: Settings)

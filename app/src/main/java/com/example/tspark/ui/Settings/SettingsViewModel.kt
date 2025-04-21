@@ -4,41 +4,66 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.tspark.data.Settings
 import com.example.tspark.data.SettingsRepository
-import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.flow.update
 
 data class SettingsState(
-    val batteryCapacity: Double = 0.0,
-    val initialRange: Double = 0.0
+    val batteryCapacity: String = "",
+    val initialRange: String = "",
 )
 
 class SettingsViewModel(private val settingsRepository: SettingsRepository) : ViewModel() {
 
-    val settingsUiState: StateFlow<SettingsState> =
+    private val _settingsUiState = MutableStateFlow(SettingsState())
+    val settingsUiState: StateFlow<SettingsState> = _settingsUiState.asStateFlow()
+    private var settingsId: Int? = null
+
+    init {
+        // Collect settings from the repository
         settingsRepository.getSettingsStream()
-            .map { it.toSettingsState() }
-            .stateIn(
-                scope = viewModelScope,
-                started = SharingStarted.WhileSubscribed(5_000),
-                initialValue = SettingsState()
-            )
-
-
-}
-
-/**
- * Extension function to convert [Settings] to [SettingsState].
- * It handles the case where the [Settings] object might be null.
- */
-fun Settings?.toSettingsState(): SettingsState {
-    return if (this != null) {
-        SettingsState(
-            batteryCapacity = batteryCapacity,
-            initialRange = initialRange
-        )
-    } else {
-        SettingsState() // Return default state when settings is null
+            .map { settings ->
+                if (settings != null) {
+                    settingsId = settings.id
+                    // Update _settingsUiState with the values from the repository
+                    _settingsUiState.update { currentState ->
+                        currentState.copy(
+                            batteryCapacity = settings.batteryCapacity.toString(),
+                            initialRange = settings.initialRange.toString()
+                        )
+                    }
+                }
+            }
+            .launchIn(viewModelScope)
     }
+
+    fun setBatteryCapacity(batteryCapacity: String) {
+        _settingsUiState.update { prev ->
+            prev.copy(batteryCapacity = batteryCapacity)
+        }
+    }
+
+    fun setInitialRange(initialRange: String) {
+        _settingsUiState.update { prev ->
+            prev.copy(initialRange = initialRange)
+        }
+    }
+
+    suspend fun saveSettings() {
+        var updatedItem = Settings(
+            batteryCapacity = _settingsUiState.value.batteryCapacity.toDouble(),
+            initialRange = _settingsUiState.value.initialRange.toDouble()
+        )
+
+        if (settingsId != null) {
+            settingsRepository.updateItem(updatedItem.copy(id = settingsId!!))
+
+        } else {
+            settingsRepository.insertItem(updatedItem)
+        }
+    }
+
 }
