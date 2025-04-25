@@ -51,7 +51,7 @@ fun SettingsScreen(
                 keyboardController?.hide()
             }
         }) {
-            Text(stringResource(R.string.calcBtn))
+            Text(stringResource(R.string.save))
         }
 
     }

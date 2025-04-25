@@ -8,6 +8,7 @@ import com.example.tspark.data.UserPreferencesRepository
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
@@ -40,11 +41,19 @@ class ChargeCalculatorViewModel(
                 }
             }
 
-            userPreferencesRepository.currentBattery.collect { currentBattery ->
+            // Combine the two DataStore flows
+            combine(
+                userPreferencesRepository.currentBatterySoc,
+                userPreferencesRepository.targetBatterySoc,
+                userPreferencesRepository.amps
+            ) { currentBattery, targetBattery, amps ->
+                Triple(currentBattery, targetBattery, amps)
+            }.collect { (currentBattery, targetBattery, amps) ->
                 _uiState.update { prev ->
-                    prev.copy(currentSOC = currentBattery)
+                    prev.copy(currentSOC = currentBattery, targetSOC = targetBattery, amps = amps)
                 }
             }
+
         }
     }
 
@@ -107,7 +116,11 @@ class ChargeCalculatorViewModel(
 
         // save current battery state
         viewModelScope.launch {
-            userPreferencesRepository.saveCurrentBatteryPreference(_uiState.value.currentSOC)
+            userPreferencesRepository.saveCurrentBatteryPreference(
+                _uiState.value.currentSOC,
+                _uiState.value.targetSOC,
+                _uiState.value.amps
+            )
         }
 
     }
