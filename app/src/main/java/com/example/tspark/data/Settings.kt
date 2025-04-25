@@ -11,5 +11,6 @@ data class Settings(
     @PrimaryKey(autoGenerate = true)
     val id: Int = 0,
     val batteryCapacity: Double,
-    val initialRange: Double
+    val initialRange: Double,
+    val currentRange: Double,
 )

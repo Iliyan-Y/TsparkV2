@@ -9,6 +9,5 @@ data class ChargeCalculatorState(
     val remainingMinutes: Long = 0L,
     val voltage: String = "200",
     val kWhNeeded: String = "0",
-    val currentMaxRange: String = "266"
 )
 

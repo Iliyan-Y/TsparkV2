@@ -45,6 +45,13 @@ fun SettingsScreen(
             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number)
         )
 
+        TextField(
+            value = uiState.currentRange,
+            onValueChange = { settingsViewModel.setCurrentRange(it) },
+            label = { Text("Current Range") },
+            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number)
+        )
+
         Button(onClick = {
             coroutineScope.launch {
                 settingsViewModel.saveSettings()

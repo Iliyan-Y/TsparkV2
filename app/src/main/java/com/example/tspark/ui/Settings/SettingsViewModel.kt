@@ -14,6 +14,7 @@ import kotlinx.coroutines.flow.update
 data class SettingsState(
     val batteryCapacity: String = "",
     val initialRange: String = "",
+    val currentRange: String = ""
 )
 
 class SettingsViewModel(private val settingsRepository: SettingsRepository) : ViewModel() {
@@ -32,7 +33,8 @@ class SettingsViewModel(private val settingsRepository: SettingsRepository) : Vi
                     _settingsUiState.update { currentState ->
                         currentState.copy(
                             batteryCapacity = settings.batteryCapacity.toString(),
-                            initialRange = settings.initialRange.toString()
+                            initialRange = settings.initialRange.toString(),
+                            currentRange = settings.currentRange.toString()
                         )
                     }
                 }
@@ -52,10 +54,17 @@ class SettingsViewModel(private val settingsRepository: SettingsRepository) : Vi
         }
     }
 
+    fun setCurrentRange(currentRange: String) {
+        _settingsUiState.update { prev ->
+            prev.copy(currentRange = currentRange)
+        }
+    }
+
     suspend fun saveSettings() {
         var updatedItem = Settings(
             batteryCapacity = _settingsUiState.value.batteryCapacity.toDouble(),
-            initialRange = _settingsUiState.value.initialRange.toDouble()
+            initialRange = _settingsUiState.value.initialRange.toDouble(),
+            currentRange = _settingsUiState.value.currentRange.toDouble()
         )
 
         if (settingsId != null) {

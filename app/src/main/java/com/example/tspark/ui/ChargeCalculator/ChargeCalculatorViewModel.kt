@@ -9,7 +9,6 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.combine
-import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlin.time.Duration.Companion.hours
@@ -24,45 +23,50 @@ class ChargeCalculatorViewModel(
     // Tesla LFP battery usable capacity  57.5 kWh
     private var batteryCapacity = 57.5
     private var initialRange = 272.0 //mi
+    private var currentMaxRange = initialRange  //assuming no battery degradation
 
     init {
         viewModelScope.launch {
-            settingsRepository.getSettingsStream().first().let { settings ->
-                if (settings != null) {
-                    batteryCapacity = settings.batteryCapacity
-                    initialRange = settings.initialRange
-                } else {
-                    settingsRepository.insertItem(
-                        Settings(
-                            batteryCapacity = batteryCapacity,
-                            initialRange = initialRange
+            // Collect settings stream
+            launch {
+                settingsRepository.getSettingsStream().collect { settings ->
+                    if (settings != null) {
+                        batteryCapacity = settings.batteryCapacity
+                        initialRange = settings.initialRange
+                        currentMaxRange = settings.currentRange
+                    } else {
+                        settingsRepository.insertItem(
+                            Settings(
+                                batteryCapacity = batteryCapacity,
+                                initialRange = initialRange,
+                                currentRange = currentMaxRange
+                            )
                         )
-                    )
+                    }
                 }
             }
 
-            // Combine the two DataStore flows
-            combine(
-                userPreferencesRepository.currentBatterySoc,
-                userPreferencesRepository.targetBatterySoc,
-                userPreferencesRepository.amps
-            ) { currentBattery, targetBattery, amps ->
-                Triple(currentBattery, targetBattery, amps)
-            }.collect { (currentBattery, targetBattery, amps) ->
-                _uiState.update { prev ->
-                    prev.copy(currentSOC = currentBattery, targetSOC = targetBattery, amps = amps)
+            // Collect DataStore values
+            launch {
+                combine(
+                    userPreferencesRepository.currentBatterySoc,
+                    userPreferencesRepository.targetBatterySoc,
+                    userPreferencesRepository.amps
+                ) { currentBattery, targetBattery, amps ->
+                    Triple(currentBattery, targetBattery, amps)
+                }.collect { (currentBattery, targetBattery, amps) ->
+                    _uiState.update { prev ->
+                        prev.copy(
+                            currentSOC = currentBattery,
+                            targetSOC = targetBattery,
+                            amps = amps
+                        )
+                    }
                 }
             }
-
         }
     }
 
-    fun setCurrentMaxRange(currentMaxRange: String) {
-        _uiState.update { prev ->
-            prev.copy(currentMaxRange = currentMaxRange)
-        }
-
-    }
 
     fun setVoltage(voltage: String) {
         _uiState.update { prev ->
@@ -89,7 +93,7 @@ class ChargeCalculatorViewModel(
     }
 
     fun calculateBatteryDegradation(): Double {
-        return (initialRange - _uiState.value.currentMaxRange.toInt()) / initialRange
+        return (initialRange - currentMaxRange) / initialRange
     }
 
     //    Power (kW) = Voltage (V) x Amps (A) / 1000

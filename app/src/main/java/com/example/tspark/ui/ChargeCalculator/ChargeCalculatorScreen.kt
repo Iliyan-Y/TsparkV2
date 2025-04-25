@@ -39,7 +39,7 @@ fun ChargeCalculatorScreen(
     val uiState by viewModel.uiState.collectAsState()
     var showOptionalFields by remember { mutableStateOf(false) }
 
-    //todo add also cost to the result
+    //todo CALCULATE COST
 
     Column(modifier = modifier, horizontalAlignment = Alignment.CenterHorizontally) {
         Row(
@@ -62,13 +62,6 @@ fun ChargeCalculatorScreen(
         }
 
         if (showOptionalFields) {
-            TextField(
-                value = uiState.currentMaxRange,
-                onValueChange = { viewModel.setCurrentMaxRange(it) },
-                label = { Text("Current Max Range at 100%") },
-                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number)
-            )
-
             TextField(
                 value = uiState.voltage,
                 onValueChange = {
