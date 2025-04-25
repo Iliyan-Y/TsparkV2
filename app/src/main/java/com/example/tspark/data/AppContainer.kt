@@ -10,7 +10,6 @@ interface AppContainer {
 }
 
 class AppDataContainer(private val context: Context) : AppContainer {
-
     override val settingsRepository: SettingsRepository by lazy {
         OfflineSettingsRepository(TSparkDB.getDatabase(context).settingsDao())
     }

@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.tspark.data.Settings
 import com.example.tspark.data.SettingsRepository
+import com.example.tspark.data.UserPreferencesRepository
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -12,7 +13,10 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlin.time.Duration.Companion.hours
 
-class ChargeCalculatorViewModel(private val settingsRepository: SettingsRepository) : ViewModel() {
+class ChargeCalculatorViewModel(
+    private val settingsRepository: SettingsRepository,
+    private val userPreferencesRepository: UserPreferencesRepository
+) : ViewModel() {
     private val _uiState = MutableStateFlow(ChargeCalculatorState())
     val uiState: StateFlow<ChargeCalculatorState> = _uiState.asStateFlow()
 
@@ -33,6 +37,12 @@ class ChargeCalculatorViewModel(private val settingsRepository: SettingsReposito
                             initialRange = initialRange
                         )
                     )
+                }
+            }
+
+            userPreferencesRepository.currentBattery.collect { currentBattery ->
+                _uiState.update { prev ->
+                    prev.copy(currentSOC = currentBattery)
                 }
             }
         }
@@ -93,6 +103,11 @@ class ChargeCalculatorViewModel(private val settingsRepository: SettingsReposito
                 remainingHours = duration.inWholeHours,
                 remainingMinutes = (duration - duration.inWholeHours.hours).inWholeMinutes
             )
+        }
+
+        // save current battery state
+        viewModelScope.launch {
+            userPreferencesRepository.saveCurrentBatteryPreference(_uiState.value.currentSOC)
         }
 
     }

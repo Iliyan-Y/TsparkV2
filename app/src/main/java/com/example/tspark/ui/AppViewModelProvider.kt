@@ -21,7 +21,13 @@ object AppViewModelProvider {
         }
 
         initializer {
-            ChargeCalculatorViewModel(tSparkApplication().container.settingsRepository)
+            //val application = (this[APPLICATION_KEY] as TSparkAppContainer)
+            val app = tSparkApplication()
+            val settingsRepository = app.container.settingsRepository
+            ChargeCalculatorViewModel(
+                settingsRepository,
+                app.userPreferencesRepository
+            )
         }
     }
 }
