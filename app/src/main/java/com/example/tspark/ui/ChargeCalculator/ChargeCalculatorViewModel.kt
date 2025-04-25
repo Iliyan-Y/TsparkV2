@@ -1,18 +1,42 @@
 package com.example.tspark.ui.ChargeCalculator
 
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
+import com.example.tspark.data.Settings
+import com.example.tspark.data.SettingsRepository
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.launch
 import kotlin.time.Duration.Companion.hours
 
-class ChargeCalculatorViewModel : ViewModel() {
+class ChargeCalculatorViewModel(private val settingsRepository: SettingsRepository) : ViewModel() {
     private val _uiState = MutableStateFlow(ChargeCalculatorState())
     val uiState: StateFlow<ChargeCalculatorState> = _uiState.asStateFlow()
 
     // Tesla LFP battery usable capacity  57.5 kWh
-    private val batteryCapacity = 57.5
+    private var batteryCapacity = 57.5
+    private var initialRange = 272.0 //mi
+
+    init {
+        viewModelScope.launch {
+            settingsRepository.getSettingsStream().first().let { settings ->
+                if (settings != null) {
+                    batteryCapacity = settings.batteryCapacity
+                    initialRange = settings.initialRange
+                } else {
+                    settingsRepository.insertItem(
+                        Settings(
+                            batteryCapacity = batteryCapacity,
+                            initialRange = initialRange
+                        )
+                    )
+                }
+            }
+        }
+    }
 
     fun setCurrentMaxRange(currentMaxRange: String) {
         _uiState.update { prev ->
@@ -46,8 +70,6 @@ class ChargeCalculatorViewModel : ViewModel() {
     }
 
     fun calculateBatteryDegradation(): Double {
-        val initialRange = 272.0 //mi
-
         return (initialRange - _uiState.value.currentMaxRange.toInt()) / initialRange
     }
 

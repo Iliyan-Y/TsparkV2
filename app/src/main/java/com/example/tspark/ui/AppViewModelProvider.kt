@@ -13,6 +13,7 @@ import com.example.tspark.ui.Settings.SettingsViewModel
  * Provides Factory to create instance of ViewModel for the entire app
  */
 object AppViewModelProvider {
+
     val Factory = viewModelFactory {
         // Initializer for SettingsViewModel
         initializer {
@@ -20,7 +21,7 @@ object AppViewModelProvider {
         }
 
         initializer {
-            ChargeCalculatorViewModel()
+            ChargeCalculatorViewModel(tSparkApplication().container.settingsRepository)
         }
     }
 }
