@@ -4,6 +4,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material.icons.filled.Settings
+import androidx.compose.material3.DrawerState
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -17,6 +18,8 @@ import androidx.compose.ui.res.stringResource
 import androidx.navigation.NavHostController
 import com.example.tspark.AppScreen
 import com.example.tspark.R
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -24,6 +27,8 @@ fun TopNavBar(
     currentScreen: AppScreen,
     canNavigateBack: Boolean,
     navController: NavHostController,
+    menuScope: CoroutineScope,
+    drawerState: DrawerState,
     modifier: Modifier = Modifier
 ) {
     TopAppBar(
@@ -42,7 +47,19 @@ fun TopNavBar(
                     )
                 }
             } else {
-                IconButton(onClick = {}) {
+                IconButton(onClick = {
+                    if (currentScreen != AppScreen.Settings) {
+                        if (drawerState.isClosed) {
+                            menuScope.launch {
+                                drawerState.open()
+                            }
+                        } else {
+                            menuScope.launch {
+                                drawerState.close()
+                            }
+                        }
+                    }
+                }) {
                     Icon(
                         imageVector = Icons.Filled.Menu,
                         contentDescription = "Menu"

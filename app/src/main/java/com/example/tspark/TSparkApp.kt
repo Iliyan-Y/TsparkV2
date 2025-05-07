@@ -55,17 +55,20 @@ fun TSparkApp(
     //            drawerState.close()
     //        }
     //    }
-    val scope = rememberCoroutineScope()
+    val menuScope = rememberCoroutineScope()
 
     HamburgerMenu(
         drawerState = drawerState,
+        menuScope,
         {
             Scaffold(
                 topBar = {
                     TopNavBar(
                         currentScreen = currentScreen,
                         canNavigateBack = navController.previousBackStackEntry != null && currentScreen == AppScreen.Settings,
-                        navController
+                        navController,
+                        menuScope,
+                        drawerState
                     )
                 },
                 modifier = Modifier

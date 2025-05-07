@@ -1,5 +1,6 @@
 package com.example.tspark.ui.components
 
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.height
@@ -20,10 +21,13 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.launch
 
 @Composable
 fun HamburgerMenu(
     drawerState: DrawerState,
+    menuScope: CoroutineScope,
     content: @Composable () -> Unit,
 ) {
 
@@ -39,9 +43,16 @@ fun HamburgerMenu(
                     Spacer(Modifier.height(12.dp))
                     Text(
                         "Drawer Title",
-                        modifier = Modifier.padding(16.dp),
-                        style = MaterialTheme.typography.titleLarge
-                    )
+                        modifier = Modifier
+                            .padding(16.dp)
+                            .clickable {
+                                menuScope.launch {
+                                    drawerState.close()
+                                }
+                            },
+                        style = MaterialTheme.typography.titleLarge,
+
+                        )
                     HorizontalDivider()
 
                     Text(
