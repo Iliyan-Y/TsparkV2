@@ -26,6 +26,8 @@ class ChargeCalculatorViewModel(
     private var currentMaxRange = initialRange  //assuming no battery degradation
 
     init {
+        // done this way we can collect both the settings stream and the datastore values at the same time
+        // it runs as coroutine so it doesn't block the UI thread
         viewModelScope.launch {
             // Collect settings stream
             launch {

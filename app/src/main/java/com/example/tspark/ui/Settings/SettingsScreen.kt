@@ -52,6 +52,8 @@ fun SettingsScreen(
             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number)
         )
 
+        //todo if degradation figure available show it here
+
         Button(onClick = {
             coroutineScope.launch {
                 settingsViewModel.saveSettings()

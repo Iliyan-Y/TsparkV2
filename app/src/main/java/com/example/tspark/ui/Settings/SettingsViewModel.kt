@@ -15,6 +15,7 @@ data class SettingsState(
     val batteryCapacity: String = "",
     val initialRange: String = "",
     val currentRange: String = ""
+    //todo saveThe degradation
 )
 
 class SettingsViewModel(private val settingsRepository: SettingsRepository) : ViewModel() {
@@ -66,6 +67,7 @@ class SettingsViewModel(private val settingsRepository: SettingsRepository) : Vi
             initialRange = _settingsUiState.value.initialRange.toDouble(),
             currentRange = _settingsUiState.value.currentRange.toDouble()
         )
+        //todo save and calculate current degradation
 
         if (settingsId != null) {
             settingsRepository.updateItem(updatedItem.copy(id = settingsId!!))

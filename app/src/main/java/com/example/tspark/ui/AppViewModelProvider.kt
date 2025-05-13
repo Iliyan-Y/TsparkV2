@@ -6,6 +6,7 @@ import androidx.lifecycle.viewmodel.CreationExtras
 import androidx.lifecycle.viewmodel.initializer
 import androidx.lifecycle.viewmodel.viewModelFactory
 import com.example.tspark.TSparkAppContainer
+import com.example.tspark.ui.CalcDistance.ViewModelCalcDistance
 import com.example.tspark.ui.ChargeCalculator.ChargeCalculatorViewModel
 import com.example.tspark.ui.Settings.SettingsViewModel
 
@@ -28,6 +29,10 @@ object AppViewModelProvider {
                 settingsRepository,
                 app.userPreferencesRepository
             )
+        }
+        
+        initializer {
+            ViewModelCalcDistance(tSparkApplication().container.settingsRepository)
         }
     }
 }
