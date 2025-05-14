@@ -112,8 +112,8 @@ fun ChargeCalculatorScreen(
 
         if (uiState.power != 0.0) {
             Text("kW needed:  ${String.format("%.2f", uiState.kWhNeeded.toDouble())}")
-            Text("Time remain: ${uiState.remainingHours} h ${uiState.remainingMinutes} m")
-            Text("On ${uiState.power} kWh")
+            Text("Time remain: ${uiState.remainingHours} h ${uiState.remainingMinutes} m On ${uiState.power} kWh")
+            Text("Cost: ${String.format("%.2f", uiState.cost)}£")
         }
     }
 

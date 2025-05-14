@@ -24,6 +24,7 @@ class ChargeCalculatorViewModel(
     private var batteryCapacity = 57.5
     private var initialRange = 272.0 //mi
     private var currentMaxRange = initialRange  //assuming no battery degradation
+    private var electricityPrice = 27.50 //p/kWh
 
     init {
         // done this way we can collect both the settings stream and the datastore values at the same time
@@ -36,6 +37,7 @@ class ChargeCalculatorViewModel(
                         batteryCapacity = settings.currentBatteryCapacity
                         initialRange = settings.initialRange
                         currentMaxRange = settings.currentRange
+                        electricityPrice = settings.electricityPrice
                     } else {
                         // todo: move this initialization to the higher component as this might not be the first app screen
                         settingsRepository.insertItem(
@@ -43,7 +45,7 @@ class ChargeCalculatorViewModel(
                                 batteryCapacity = batteryCapacity,
                                 initialRange = initialRange,
                                 currentRange = currentMaxRange,
-                                electricityPrice = 27.50, // p/kwh
+                                electricityPrice = electricityPrice, // p/kwh
                                 carEfficiency = 200.0, // wH/mi
                                 degradationPercentage = 0.0,
                                 currentBatteryCapacity = batteryCapacity
@@ -115,7 +117,8 @@ class ChargeCalculatorViewModel(
                 power = powerKwh,
                 kWhNeeded = energyNeeded.toString(),
                 remainingHours = duration.inWholeHours,
-                remainingMinutes = (duration - duration.inWholeHours.hours).inWholeMinutes
+                remainingMinutes = (duration - duration.inWholeHours.hours).inWholeMinutes,
+                cost = energyNeeded * electricityPrice / 100
             )
         }
 
