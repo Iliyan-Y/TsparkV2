@@ -54,6 +54,20 @@ fun SettingsScreen(
             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number)
         )
 
+        TextField(
+            value = uiState.electricityPrice,
+            onValueChange = { settingsViewModel.setElectricityPrice(it) },
+            label = { Text("Electricity Price p/kWh") },
+            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number)
+        )
+
+        TextField(
+            value = uiState.carEfficiency,
+            onValueChange = { settingsViewModel.setCarEfficiency(it) },
+            label = { Text("Efficiency wH/mi or km") },
+            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number)
+        )
+
         if (uiState.degradationPercentage > 0) {
             Text(
                 "Battery degradation: ${

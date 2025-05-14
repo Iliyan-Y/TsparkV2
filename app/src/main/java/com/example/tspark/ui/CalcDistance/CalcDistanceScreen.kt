@@ -47,14 +47,15 @@ fun CalcDistanceScreen(
             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number)
         )
 
-        if (uiState.percentage.toDouble() > 0) {
-            Text("Power required: ${String.format("%.2f", uiState.powerRequired.toDouble())} kWh")
-            Text("Percentage: ${String.format("%.2f", uiState.percentage.toDouble())}%")
+        if (uiState.percentage > 0) {
+            Text("Power required: ${String.format("%.2f", uiState.powerRequired)} kWh")
+            Text("Percentage: ${String.format("%.2f", uiState.percentage)}%")
+            Text("Total cost: ${String.format("%.2f", uiState.cost)}")
         }
 
         Button(onClick = {
             coroutineScope.launch {
-                viewModel.calculatePercentage()
+                viewModel.calculate()
                 keyboardController?.hide()
             }
         }) {

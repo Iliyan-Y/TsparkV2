@@ -43,6 +43,8 @@ class ChargeCalculatorViewModel(
                                 batteryCapacity = batteryCapacity,
                                 initialRange = initialRange,
                                 currentRange = currentMaxRange,
+                                electricityPrice = 27.50, // p/kwh
+                                carEfficiency = 200.0, // wH/mi
                                 degradationPercentage = 0.0,
                                 currentBatteryCapacity = batteryCapacity
                             )

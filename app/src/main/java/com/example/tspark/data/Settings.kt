@@ -13,6 +13,8 @@ data class Settings(
     val batteryCapacity: Double,
     val initialRange: Double,
     val currentRange: Double,
+    val electricityPrice: Double,
+    val carEfficiency: Double, // kWh/mi or km
     val degradationPercentage: Double,
     val currentBatteryCapacity: Double, // after degradation
 )

@@ -16,7 +16,9 @@ data class SettingsState(
     val initialRange: String = "",
     val currentRange: String = "",
     val degradationPercentage: Double = 0.0,
-    val currentBatteryCapacity: Double = 0.0
+    val currentBatteryCapacity: Double = 0.0,
+    val electricityPrice: String = "",
+    val carEfficiency: String = ""
 )
 
 class SettingsViewModel(private val settingsRepository: SettingsRepository) : ViewModel() {
@@ -38,7 +40,9 @@ class SettingsViewModel(private val settingsRepository: SettingsRepository) : Vi
                             initialRange = settings.initialRange.toString(),
                             currentRange = settings.currentRange.toString(),
                             degradationPercentage = settings.degradationPercentage,
-                            currentBatteryCapacity = settings.currentBatteryCapacity
+                            currentBatteryCapacity = settings.currentBatteryCapacity,
+                            carEfficiency = settings.carEfficiency.toString(),
+                            electricityPrice = settings.electricityPrice.toString()
                         )
                     }
                 }
@@ -64,6 +68,18 @@ class SettingsViewModel(private val settingsRepository: SettingsRepository) : Vi
         }
     }
 
+    fun setElectricityPrice(electricityPrice: String) {
+        _settingsUiState.update { prev ->
+            prev.copy(electricityPrice = electricityPrice)
+        }
+    }
+
+    fun setCarEfficiency(carEfficiency: String) {
+        _settingsUiState.update { prev ->
+            prev.copy(carEfficiency = carEfficiency)
+        }
+    }
+
     fun calculateBatteryDegradation(): Double {
         var initialRange = _settingsUiState.value.initialRange.toDouble()
         return (initialRange - _settingsUiState.value.currentRange.toDouble()) / initialRange
@@ -78,7 +94,9 @@ class SettingsViewModel(private val settingsRepository: SettingsRepository) : Vi
             initialRange = _settingsUiState.value.initialRange.toDouble(),
             currentRange = _settingsUiState.value.currentRange.toDouble(),
             degradationPercentage = degradationPercentage,
-            currentBatteryCapacity = batteryCapacity - batteryCapacity * degradationPercentage
+            currentBatteryCapacity = batteryCapacity - batteryCapacity * degradationPercentage,
+            electricityPrice = _settingsUiState.value.electricityPrice.toDouble(),
+            carEfficiency = _settingsUiState.value.carEfficiency.toDouble()
         )
 
         if (settingsId != null) {
