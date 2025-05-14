@@ -63,6 +63,14 @@ fun SettingsScreen(
                     )
                 }%"
             )
+            Text(
+                "Current battery capacity: ${
+                    String.format(
+                        "%.2f",
+                        uiState.currentBatteryCapacity
+                    )
+                } kWh"
+            )
         }
 
         Button(onClick = {

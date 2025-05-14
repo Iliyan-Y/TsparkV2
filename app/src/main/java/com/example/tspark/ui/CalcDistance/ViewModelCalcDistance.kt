@@ -28,7 +28,7 @@ class ViewModelCalcDistance(private val settingsRepository: SettingsRepository) 
         viewModelScope.launch {
             settingsRepository.getSettingsStream().collect { settings ->
                 settings?.let {
-                    batteryCapacity = it.batteryCapacity
+                    batteryCapacity = it.currentBatteryCapacity
                 }
             }
         }

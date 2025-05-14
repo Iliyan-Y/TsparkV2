@@ -33,7 +33,7 @@ class ChargeCalculatorViewModel(
             launch {
                 settingsRepository.getSettingsStream().collect { settings ->
                     if (settings != null) {
-                        batteryCapacity = settings.batteryCapacity
+                        batteryCapacity = settings.currentBatteryCapacity
                         initialRange = settings.initialRange
                         currentMaxRange = settings.currentRange
                     } else {
@@ -97,20 +97,14 @@ class ChargeCalculatorViewModel(
         }
     }
 
-    fun calculateBatteryDegradation(): Double {
-        return (initialRange - currentMaxRange) / initialRange
-    }
-
     //    Power (kW) = Voltage (V) x Amps (A) / 1000
     //    230V x 8A = 1840 Watts
     //    1840 Watts / 1000 = 1.84 kW
     //    1.84 kW x 1 hour = 1.84 kWh
     fun handleCalculateTime() {
-        val effectiveCapacity = batteryCapacity - batteryCapacity * calculateBatteryDegradation()
-
         val powerKwh = _uiState.value.voltage.toDouble() * _uiState.value.amps.toInt() / 1000 // kWh
         val energyNeeded =
-            (_uiState.value.targetSOC.toInt() - _uiState.value.currentSOC.toInt()) / 100.0 * effectiveCapacity // kWh
+            (_uiState.value.targetSOC.toInt() - _uiState.value.currentSOC.toInt()) / 100.0 * batteryCapacity // kWh
         val timeHours = energyNeeded / powerKwh
         val duration = timeHours.hours
 
