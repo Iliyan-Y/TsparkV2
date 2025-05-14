@@ -14,6 +14,7 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import com.example.tspark.R
+import com.example.tspark.ui.CalcDistance.CalcDistanceScreen
 import com.example.tspark.ui.ChargeCalculator.ChargeCalculatorScreen
 import com.example.tspark.ui.Settings.SettingsScreen
 import defaultEnterTransition
@@ -24,6 +25,7 @@ import defaultPopExitTransition
 enum class AppScreen(@StringRes val title: Int) {
     Start(title = R.string.app_name),
     Settings(title = R.string.settings),
+    CalcDistance(title = R.string.calcDistance)
 }
 
 @Composable
@@ -56,6 +58,18 @@ fun AppNavHost(innerPadding: PaddingValues, navController: NavHostController) {
             exitTransition = { defaultExitTransition() },
         ) {
             SettingsScreen(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .wrapContentSize(Alignment.Center)
+                    .padding(innerPadding)
+            )
+        }
+        composable(
+            route = AppScreen.CalcDistance.name,
+            enterTransition = { defaultEnterTransition() },
+            exitTransition = { defaultExitTransition() },
+        ) {
+            CalcDistanceScreen(
                 modifier = Modifier
                     .fillMaxSize()
                     .wrapContentSize(Alignment.Center)

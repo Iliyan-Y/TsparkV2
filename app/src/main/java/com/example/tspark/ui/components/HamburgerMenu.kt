@@ -21,6 +21,8 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import androidx.navigation.NavHostController
+import com.example.tspark.ui.navigation.AppScreen
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 
@@ -28,10 +30,10 @@ import kotlinx.coroutines.launch
 fun HamburgerMenu(
     drawerState: DrawerState,
     menuScope: CoroutineScope,
+    currentScreen: AppScreen,
+    navController: NavHostController,
     content: @Composable () -> Unit,
 ) {
-
-
     ModalNavigationDrawer(
         drawerContent = {
             ModalDrawerSheet {
