@@ -37,11 +37,14 @@ class ChargeCalculatorViewModel(
                         initialRange = settings.initialRange
                         currentMaxRange = settings.currentRange
                     } else {
+                        // todo: move this initialization to the higher component as this might not be the first app screen
                         settingsRepository.insertItem(
                             Settings(
                                 batteryCapacity = batteryCapacity,
                                 initialRange = initialRange,
-                                currentRange = currentMaxRange
+                                currentRange = currentMaxRange,
+                                degradationPercentage = 0.0,
+                                currentBatteryCapacity = batteryCapacity
                             )
                         )
                     }

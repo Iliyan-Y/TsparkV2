@@ -1,5 +1,6 @@
 package com.example.tspark.ui.Settings
 
+import android.annotation.SuppressLint
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.Button
@@ -19,6 +20,7 @@ import com.example.tspark.R
 import com.example.tspark.ui.AppViewModelProvider
 import kotlinx.coroutines.launch
 
+@SuppressLint("DefaultLocale")
 @Composable
 fun SettingsScreen(
     settingsViewModel: SettingsViewModel = viewModel(factory = AppViewModelProvider.Factory),
@@ -52,7 +54,16 @@ fun SettingsScreen(
             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number)
         )
 
-        //todo if degradation figure available show it here
+        if (uiState.degradationPercentage > 0) {
+            Text(
+                "Battery degradation: ${
+                    String.format(
+                        "%.2f",
+                        uiState.degradationPercentage * 100
+                    )
+                }%"
+            )
+        }
 
         Button(onClick = {
             coroutineScope.launch {

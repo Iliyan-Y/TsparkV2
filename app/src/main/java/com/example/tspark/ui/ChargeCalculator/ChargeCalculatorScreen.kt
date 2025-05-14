@@ -111,14 +111,6 @@ fun ChargeCalculatorScreen(
         }
 
         if (uiState.power != 0.0) {
-            Text(
-                "Battery degradation: ${
-                    String.format(
-                        "%.2f",
-                        viewModel.calculateBatteryDegradation() * 100
-                    )
-                }%"
-            )
             Text("kW needed:  ${String.format("%.2f", uiState.kWhNeeded.toDouble())}")
             Text("Time remain: ${uiState.remainingHours} h ${uiState.remainingMinutes} m")
             Text("On ${uiState.power} kWh")

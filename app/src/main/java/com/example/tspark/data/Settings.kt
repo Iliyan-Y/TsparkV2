@@ -13,4 +13,6 @@ data class Settings(
     val batteryCapacity: Double,
     val initialRange: Double,
     val currentRange: Double,
+    val degradationPercentage: Double,
+    val currentBatteryCapacity: Double, // after degradation
 )

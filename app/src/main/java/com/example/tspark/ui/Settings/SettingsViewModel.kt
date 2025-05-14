@@ -14,8 +14,9 @@ import kotlinx.coroutines.flow.update
 data class SettingsState(
     val batteryCapacity: String = "",
     val initialRange: String = "",
-    val currentRange: String = ""
-    //todo saveThe degradation
+    val currentRange: String = "",
+    val degradationPercentage: Double = 0.0,
+    val currentBatteryCapacity: Double = 0.0
 )
 
 class SettingsViewModel(private val settingsRepository: SettingsRepository) : ViewModel() {
@@ -35,7 +36,9 @@ class SettingsViewModel(private val settingsRepository: SettingsRepository) : Vi
                         currentState.copy(
                             batteryCapacity = settings.batteryCapacity.toString(),
                             initialRange = settings.initialRange.toString(),
-                            currentRange = settings.currentRange.toString()
+                            currentRange = settings.currentRange.toString(),
+                            degradationPercentage = settings.degradationPercentage,
+                            currentBatteryCapacity = settings.currentBatteryCapacity
                         )
                     }
                 }
@@ -61,17 +64,25 @@ class SettingsViewModel(private val settingsRepository: SettingsRepository) : Vi
         }
     }
 
+    fun calculateBatteryDegradation(): Double {
+        var initialRange = _settingsUiState.value.initialRange.toDouble()
+        return (initialRange - _settingsUiState.value.currentRange.toDouble()) / initialRange
+    }
+
     suspend fun saveSettings() {
+        var degradationPercentage = calculateBatteryDegradation()
+        var batteryCapacity = _settingsUiState.value.batteryCapacity.toDouble()
+
         var updatedItem = Settings(
-            batteryCapacity = _settingsUiState.value.batteryCapacity.toDouble(),
+            batteryCapacity = batteryCapacity,
             initialRange = _settingsUiState.value.initialRange.toDouble(),
-            currentRange = _settingsUiState.value.currentRange.toDouble()
+            currentRange = _settingsUiState.value.currentRange.toDouble(),
+            degradationPercentage = degradationPercentage,
+            currentBatteryCapacity = batteryCapacity - batteryCapacity * degradationPercentage
         )
-        //todo save and calculate current degradation
 
         if (settingsId != null) {
             settingsRepository.updateItem(updatedItem.copy(id = settingsId!!))
-
         } else {
             settingsRepository.insertItem(updatedItem)
         }
