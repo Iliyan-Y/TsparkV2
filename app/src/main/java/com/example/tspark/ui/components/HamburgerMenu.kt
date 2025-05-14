@@ -20,8 +20,10 @@ import androidx.compose.material3.NavigationDrawerItem
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
+import com.example.tspark.R
 import com.example.tspark.ui.navigation.AppScreen
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
@@ -58,10 +60,20 @@ fun HamburgerMenu(
                     HorizontalDivider()
 
                     Text(
-                        "Section 1",
-                        modifier = Modifier.padding(16.dp),
-                        style = MaterialTheme.typography.titleMedium
-                    )
+                        stringResource(R.string.calcDistance),
+                        style = MaterialTheme.typography.titleMedium,
+                        modifier = Modifier
+                            .padding(16.dp)
+                            .clickable {
+                                if (currentScreen != AppScreen.CalcDistance) {
+                                    navController.navigate(AppScreen.CalcDistance.name)
+                                }
+                                menuScope.launch {
+                                    drawerState.close()
+                                }
+                            },
+
+                        )
                     NavigationDrawerItem(
                         label = { Text("Item 1") },
                         selected = false,

@@ -49,6 +49,8 @@ fun TSparkApp(
     HamburgerMenu(
         drawerState = drawerState,
         drawerScope,
+        currentScreen,
+        navController,
         {
             Scaffold(
                 topBar = {

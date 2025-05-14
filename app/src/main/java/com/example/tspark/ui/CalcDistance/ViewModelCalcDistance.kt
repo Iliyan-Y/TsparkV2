@@ -4,12 +4,10 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.tspark.data.SettingsRepository
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.launch
 
 data class CalcDistanceState(
     val targetDistance: String = "0",
@@ -24,13 +22,17 @@ class ViewModelCalcDistance(private val settingsRepository: SettingsRepository) 
     val uiState: StateFlow<CalcDistanceState> = _uiState.asStateFlow()
 
     //todo adjust for battery degradation
-    val batteryCapacity: StateFlow<Double> = settingsRepository.getSettingsStream()
-        .map { settings -> settings?.batteryCapacity ?: 0.0 }
-        .stateIn(
-            scope = viewModelScope,
-            started = SharingStarted.WhileSubscribed(5000), // Example: stop collecting after 5 seconds of inactivity
-            initialValue = 0.0
-        )
+    private var batteryCapacity = 0.0
+
+    init {
+        viewModelScope.launch {
+            settingsRepository.getSettingsStream().collect { settings ->
+                settings?.let {
+                    batteryCapacity = it.batteryCapacity
+                }
+            }
+        }
+    }
 
     fun setTargetDistance(targetDistance: String) {
         _uiState.update { prev ->
@@ -44,19 +46,16 @@ class ViewModelCalcDistance(private val settingsRepository: SettingsRepository) 
         }
     }
 
-    fun calculatePowerRequired() {
-        val powerRequired =
-            (_uiState.value.targetDistance.toInt() * _uiState.value.consumption.toInt()) / 1000 // kWh
-        _uiState.update { prev ->
-            prev.copy(powerRequired = powerRequired.toString())
-        }
+    fun calculatePowerRequired(): Double {
+        return (_uiState.value.targetDistance.toInt() * _uiState.value.consumption.toInt()).toDouble() / 1000 // kWh
     }
 
+
     fun calculatePercentage() {
-        calculatePowerRequired()
-        val percentage = _uiState.value.powerRequired.toDouble() / batteryCapacity.value * 100
+        var powerRequired = calculatePowerRequired()
+        var percentage = powerRequired / batteryCapacity * 100
         _uiState.update { prev ->
-            prev.copy(percentage = percentage.toString())
+            prev.copy(percentage = percentage.toString(), powerRequired = powerRequired.toString())
         }
     }
 }

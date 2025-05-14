@@ -31,7 +31,7 @@ fun CalcDistanceScreen(
     val coroutineScope = rememberCoroutineScope()
 
     Column(modifier, horizontalAlignment = Alignment.CenterHorizontally) {
-        Text(text = "${R.string.calcDistance}")
+        Text(text = "Calculate the power required to reach a target distance")
 
         TextField(
             value = uiState.targetDistance,
@@ -47,14 +47,14 @@ fun CalcDistanceScreen(
             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number)
         )
 
-        if (uiState.percentage.toInt() > 0) {
+        if (uiState.percentage.toDouble() > 0) {
             Text("Power required: ${String.format("%.2f", uiState.powerRequired.toDouble())} kWh")
             Text("Percentage: ${String.format("%.2f", uiState.percentage.toDouble())}%")
         }
 
         Button(onClick = {
             coroutineScope.launch {
-                viewModel.calculatePowerRequired()
+                viewModel.calculatePercentage()
                 keyboardController?.hide()
             }
         }) {
