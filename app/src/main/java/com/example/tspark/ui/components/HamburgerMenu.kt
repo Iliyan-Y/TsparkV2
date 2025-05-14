@@ -60,29 +60,34 @@ fun HamburgerMenu(
                     HorizontalDivider()
 
                     Text(
-                        stringResource(R.string.calcDistance),
+                        "Calculators",
                         style = MaterialTheme.typography.titleMedium,
-                        modifier = Modifier
-                            .padding(16.dp)
-                            .clickable {
-                                if (currentScreen != AppScreen.CalcDistance) {
-                                    navController.navigate(AppScreen.CalcDistance.name)
-                                }
-                                menuScope.launch {
-                                    drawerState.close()
-                                }
-                            },
-
-                        )
-                    NavigationDrawerItem(
-                        label = { Text("Item 1") },
-                        selected = false,
-                        onClick = { /* Handle click */ }
+                        modifier = Modifier.padding(16.dp)
                     )
                     NavigationDrawerItem(
-                        label = { Text("Item 2") },
-                        selected = false,
-                        onClick = { /* Handle click */ }
+                        label = { Text("Charge") },
+                        selected = currentScreen == AppScreen.Start,
+                        onClick = {
+                            if (currentScreen != AppScreen.Start) {
+                                navController.navigate(AppScreen.Start.name)
+                            }
+                            menuScope.launch {
+                                drawerState.close()
+                            }
+                        }
+                    )
+
+                    NavigationDrawerItem(
+                        label = { Text(stringResource(R.string.calcDistance).split(" ")[0]) },
+                        selected = currentScreen == AppScreen.CalcDistance,
+                        onClick = {
+                            if (currentScreen != AppScreen.CalcDistance) {
+                                navController.navigate(AppScreen.CalcDistance.name)
+                            }
+                            menuScope.launch {
+                                drawerState.close()
+                            }
+                        }
                     )
 
                     HorizontalDivider(modifier = Modifier.padding(vertical = 8.dp))
@@ -94,10 +99,17 @@ fun HamburgerMenu(
                     )
                     NavigationDrawerItem(
                         label = { Text("Settings") },
-                        selected = false,
+                        selected = currentScreen == AppScreen.Settings,
                         icon = { Icon(Icons.Outlined.Settings, contentDescription = null) },
-                        badge = { Text("20") }, // Placeholder
-                        onClick = { /* Handle click */ }
+                        badge = { Text("battery/range etc.") }, // Placeholder
+                        onClick = {
+                            if (currentScreen != AppScreen.Settings) {
+                                navController.navigate(AppScreen.Settings.name)
+                            }
+                            menuScope.launch {
+                                drawerState.close()
+                            }
+                        }
                     )
                     NavigationDrawerItem(
                         label = { Text("Help and feedback") },
