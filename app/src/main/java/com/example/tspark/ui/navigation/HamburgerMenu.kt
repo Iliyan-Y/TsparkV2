@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.BatteryFull
 import androidx.compose.material.icons.outlined.Info
 import androidx.compose.material.icons.outlined.Settings
 import androidx.compose.material3.DrawerState
@@ -20,6 +21,7 @@ import androidx.compose.material3.NavigationDrawerItem
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
@@ -99,7 +101,14 @@ fun HamburgerMenu(
                             menuScope.launch {
                                 drawerState.close()
                             }
-                        }
+                        },
+                        icon = {
+                            Icon(
+                                Icons.Filled.BatteryFull,
+                                contentDescription = null,
+                                tint = Color.Green
+                            )
+                        },
                     )
 
                     HorizontalDivider(modifier = Modifier.padding(vertical = 8.dp))

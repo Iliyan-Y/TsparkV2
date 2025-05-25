@@ -66,7 +66,6 @@ fun TSparkApp(
                     .pointerInput(Unit) {
                         detectTapGestures(onTap = { focusManager.clearFocus() })
                     }) { innerPadding ->
-
                 AppNavHost(innerPadding, navController)
             }
         }
