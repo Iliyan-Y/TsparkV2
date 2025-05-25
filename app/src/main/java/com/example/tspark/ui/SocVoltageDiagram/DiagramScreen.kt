@@ -3,6 +3,7 @@ package com.example.tspark.ui.SocVoltageDiagram
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.gestures.detectVerticalDragGestures
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -18,6 +19,7 @@ import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -32,6 +34,7 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.core.text.isDigitsOnly
 import kotlin.math.roundToInt
 
 @Composable
@@ -41,10 +44,34 @@ fun DiagramScreen(modifier: Modifier) {
     val voltage = if (showOptionalFields) getNmcVoltage(soc) else getLfpVoltage(soc)
     var socInput by remember { mutableStateOf((soc * 100).roundToInt().toString()) }
     var showInput by remember { mutableStateOf(false) }
+
+
+    LaunchedEffect(showInput) {
+        // This block runs every time showInput changes
+        if (showInput) {
+            socInput = (soc * 100).roundToInt().toString()
+        } else {
+            if (socInput.isDigitsOnly()) {
+                if (socInput.toFloat() > 100) {
+                    socInput = "100"
+                } else if (socInput.toFloat() < 0) {
+                    socInput = "0"
+                }
+                soc = socInput.toFloat() / 100f
+            }
+        }
+    }
+
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .padding(32.dp),
+            .padding(32.dp)
+            .pointerInput(showInput) {
+                detectTapGestures {
+                    // When tapped anywhere inside Box, hide input
+                    showInput = false
+                }
+            },
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
@@ -67,7 +94,12 @@ fun DiagramScreen(modifier: Modifier) {
             }
         }
 
-        Row() {
+        Row(
+            modifier = Modifier
+                .clickable { /* consume click to prevent propagation */ showInput = true }
+                .pointerInput(Unit) {
+                    // intercept clicks so they don't propagate to Box
+                }) {
             if (showInput) {
                 Text(
                     "SoC: ",
@@ -112,6 +144,10 @@ fun DiagramScreen(modifier: Modifier) {
 fun BatteryCanvas(soc: Float, onSocChange: (Float) -> Unit) {
     var dragFraction by remember { mutableStateOf(soc) }
     val animatedFill = animateFloatAsState(targetValue = dragFraction, label = "batteryFill")
+
+    LaunchedEffect(soc) {
+        dragFraction = soc
+    }
 
     Canvas(
         modifier = Modifier
