@@ -1,4 +1,4 @@
-package com.example.tspark.ui.components
+package com.example.tspark.ui.navigation
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
@@ -24,7 +24,6 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import com.example.tspark.R
-import com.example.tspark.ui.navigation.AppScreen
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 
@@ -83,6 +82,19 @@ fun HamburgerMenu(
                         onClick = {
                             if (currentScreen != AppScreen.CalcDistance) {
                                 navController.navigate(AppScreen.CalcDistance.name)
+                            }
+                            menuScope.launch {
+                                drawerState.close()
+                            }
+                        }
+                    )
+
+                    NavigationDrawerItem(
+                        label = { Text("SOC Voltage Curve") },
+                        selected = currentScreen == AppScreen.SOCVCurve,
+                        onClick = {
+                            if (currentScreen != AppScreen.SOCVCurve) {
+                                navController.navigate(AppScreen.SOCVCurve.name)
                             }
                             menuScope.launch {
                                 drawerState.close()

@@ -5,4 +5,5 @@
     <string name="back_button">Back</string>
     <string name="save">Save</string>
     <string name="calcDistance">Distance Calculator</string>
+    <string name="socVoltageCurve">Soc Voltage Curve</string>
 </resources>

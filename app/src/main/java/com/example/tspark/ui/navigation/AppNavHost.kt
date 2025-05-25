@@ -17,6 +17,7 @@ import com.example.tspark.R
 import com.example.tspark.ui.CalcDistance.CalcDistanceScreen
 import com.example.tspark.ui.ChargeCalculator.ChargeCalculatorScreen
 import com.example.tspark.ui.Settings.SettingsScreen
+import com.example.tspark.ui.SocVoltageDiagram.DiagramScreen
 import defaultEnterTransition
 import defaultExitTransition
 import defaultPopEnterTransition
@@ -25,7 +26,8 @@ import defaultPopExitTransition
 enum class AppScreen(@StringRes val title: Int) {
     Start(title = R.string.app_name),
     Settings(title = R.string.settings),
-    CalcDistance(title = R.string.calcDistance)
+    CalcDistance(title = R.string.calcDistance),
+    SOCVCurve(title = R.string.socVoltageCurve)
 }
 
 @Composable
@@ -70,6 +72,18 @@ fun AppNavHost(innerPadding: PaddingValues, navController: NavHostController) {
             exitTransition = { defaultExitTransition() },
         ) {
             CalcDistanceScreen(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .wrapContentSize(Alignment.Center)
+                    .padding(innerPadding)
+            )
+        }
+        composable(
+            route = AppScreen.SOCVCurve.name,
+            enterTransition = { defaultEnterTransition() },
+            exitTransition = { defaultExitTransition() },
+        ) {
+            DiagramScreen(
                 modifier = Modifier
                     .fillMaxSize()
                     .wrapContentSize(Alignment.Center)

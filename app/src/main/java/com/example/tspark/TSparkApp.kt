@@ -13,10 +13,10 @@ import androidx.compose.ui.platform.LocalFocusManager
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
-import com.example.tspark.ui.components.HamburgerMenu
-import com.example.tspark.ui.components.TopNavBar
 import com.example.tspark.ui.navigation.AppNavHost
 import com.example.tspark.ui.navigation.AppScreen
+import com.example.tspark.ui.navigation.HamburgerMenu
+import com.example.tspark.ui.navigation.TopNavBar
 import kotlinx.coroutines.launch
 
 
